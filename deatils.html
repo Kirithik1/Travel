@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Details</title>
+</head>
+<body>
+
+    <h2>Travel Details</h2>
+
+    <button onclick="displayAllDetails()">Display All Details</button><br />
+
+    <label for="destination">Enter Destination:</label>
+    <input type="text" id="destination" placeholder="Enter destination">
+
+    <button onclick="displayDetailsByDestination()">Search by Destination</button>
+
+    <div id="result"></div>
+
+    <script>
+        function displayAllDetails() {
+            fetch('http://localhost:8080/Travel_itinary/TravelDetailsServlet', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => displayResults(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function displayDetailsByDestination() {
+            const destination = document.getElementById('destination').value;
+            if (!destination) {
+                alert('Please enter a destination');
+                return;
+            }
+
+            fetch(`http://localhost:8080/Travel_itinary/TravelDetailsServlet?destination=${destination}`, {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => displayResults(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function displayResults(data) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+
+            if (data.destinations && data.destinations.length > 0) {
+                const destinations = data.destinations;
+                const ul = document.createElement('ul');
+
+                destinations.forEach(destination => {
+                    const li = document.createElement('li');
+                    li.textContent = `Destination: ${destination.destination}, Date: ${destination.date}, Eat: ${destination.eat}, Leisure: ${destination.leisure}, Transportation: ${destination.transportation}`;
+                    ul.appendChild(li);
+                });
+
+                resultDiv.appendChild(ul);
+            } else {
+                resultDiv.textContent = 'No data available';
+            }
+        }
+    </script>
+
+</body>
+</html>
